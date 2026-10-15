@@ -11,7 +11,7 @@
 </style>
 </head>
 <body>
-<h3>FX Pages — load probe (GitHub Pages) build 3</h3>
+<h3>FX Pages — load probe (GitHub Pages) build 4</h3>
 <p id="status">Office.js loading…</p>
 <button id="read" disabled>Read workbook (read-only)</button>
 <button id="write" disabled>Write test (WestPro AL)</button>
@@ -84,7 +84,8 @@ document.getElementById('write').onclick = async () => {
         }
         cell.load('values');
         await ctx.sync();
-        return out(`WROTE WestPro!${addr} = ${cell.values[0][0]}`);
+        if (cell.values[0][0] !== marker) return out(`WRITE MISMATCH WestPro!${addr}: ${cell.values[0][0]}`);
+        return out(`WROTE WestPro!${addr} = ${marker}`);
       }
       out('no eligible empty cell in AL');
     });
@@ -95,11 +96,11 @@ document.getElementById('write').onclick = async () => {
   }
 };
 document.getElementById('revert').onclick = async () => {
+  const t = fxtest;
+  if (!t) return out('nothing to revert');
+  if (busy) return out('BUSY');
+  busy = true;
   try {
-    const t = fxtest;
-    if (!t) return out('nothing to revert');
-    if (busy) return out('BUSY');
-    busy = true;
     await Excel.run(async (ctx) => {
       if ((await guardBook(ctx)) !== t.book) return out(`SKIP: workbook is not ${t.book}`);
       const cell = ctx.workbook.worksheets.getItem(t.sheet).getRange(t.addr);

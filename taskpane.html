@@ -11,7 +11,7 @@
 </style>
 </head>
 <body>
-<h3>FX Pages — load probe (GitHub Pages)</h3>
+<h3>FX Pages — load probe (GitHub Pages) build 3</h3>
 <p id="status">Office.js loading…</p>
 <button id="read" disabled>Read workbook (read-only)</button>
 <button id="write" disabled>Write test (WestPro AL)</button>
@@ -30,21 +30,32 @@ Office.onReady((info) => {
 let fxtest = null;  // in-memory: keep this pane open between write and revert
 try { fxtest = JSON.parse(localStorage.getItem('fxtest') || 'null'); } catch (e) {}
 const keep = (v) => { fxtest = v; try { v ? localStorage.setItem('fxtest', JSON.stringify(v)) : localStorage.removeItem('fxtest'); } catch (e) {} };
+let busy = false;  // one Excel.run at a time across write/revert
+const guardBook = async (ctx) => {
+  ctx.workbook.load('name');
+  await ctx.sync();
+  if (!ctx.workbook.name.startsWith('TEST COPY')) throw new Error('not a TEST COPY workbook: ' + ctx.workbook.name);
+  return ctx.workbook.name;
+};
+const isEmpty = async (ctx, cell) => {
+  cell.load('formulas');
+  await ctx.sync();
+  return cell.formulas[0][0] === '';
+};
 const westpro = (ctx) => ctx.workbook.worksheets.getItem('WestPro');
 // Write one marker into the first WestPro AL cell (row >= 4, within used range)
 // that is empty, formula-free, not merged and not part of a spill.
 document.getElementById('write').onclick = async () => {
+  if (busy) return out('BUSY');
   if (fxtest) return out(`BLOCKED: revert ${fxtest.addr} first`);
-  const btn = document.getElementById('write');
-  btn.disabled = true;
+  busy = true;
   try {
     await Excel.run(async (ctx) => {
-      ctx.workbook.load('name');
+      const book = await guardBook(ctx);
       const ws = westpro(ctx);
       const used = ws.getUsedRange();
       used.load('rowIndex,rowCount');
       await ctx.sync();
-      if (!ctx.workbook.name.startsWith('TEST COPY')) return out('BLOCKED: not a TEST COPY workbook: ' + ctx.workbook.name);
       const lastRow = used.rowIndex + used.rowCount;
       if (lastRow < 4) return out('no data rows');
       const col = ws.getRange(`AL4:AL${lastRow}`);
@@ -62,10 +73,15 @@ document.getElementById('write').onclick = async () => {
         await ctx.sync();
         if (!merged.isNullObject || !spill.isNullObject || cell.formulas[0][0] !== '') continue;
         const marker = 'FXTEST ' + new Date().toISOString();
-        keep({addr, marker});
+        keep({book, sheet: 'WestPro', addr, marker});
         out(`PENDING WestPro!${addr} = ${marker}`);
         cell.values = [[marker]];
-        await ctx.sync();
+        try {
+          await ctx.sync();
+        } catch (e) {
+          if (await isEmpty(ctx, cell)) keep(null);  // write did not land: nothing to revert
+          throw e;
+        }
         cell.load('values');
         await ctx.sync();
         return out(`WROTE WestPro!${addr} = ${cell.values[0][0]}`);
@@ -75,27 +91,31 @@ document.getElementById('write').onclick = async () => {
   } catch (e) {
     out('ERROR: ' + e);
   } finally {
-    btn.disabled = false;
+    busy = false;
   }
 };
 document.getElementById('revert').onclick = async () => {
   try {
     const t = fxtest;
     if (!t) return out('nothing to revert');
+    if (busy) return out('BUSY');
+    busy = true;
     await Excel.run(async (ctx) => {
-      const cell = westpro(ctx).getRange(t.addr);
+      if ((await guardBook(ctx)) !== t.book) return out(`SKIP: workbook is not ${t.book}`);
+      const cell = ctx.workbook.worksheets.getItem(t.sheet).getRange(t.addr);
       cell.load('values');
       await ctx.sync();
       if (cell.values[0][0] !== t.marker) return out(`SKIP ${t.addr}: value changed to ${cell.values[0][0]}`);
       cell.clear(Excel.ClearApplyTo.contents);
       await ctx.sync();
-      cell.load('formulas');
-      await ctx.sync();
+      if (!(await isEmpty(ctx, cell))) return out(`REVERT FAILED ${t.addr}: not empty`);
       keep(null);
-      out(`REVERTED WestPro!${t.addr} -> ${JSON.stringify(cell.formulas[0][0])}`);
+      out(`REVERTED ${t.sheet}!${t.addr} -> ""`);
     });
   } catch (e) {
     out('ERROR: ' + e);
+  } finally {
+    busy = false;
   }
 };
 document.getElementById('read').onclick = async () => {

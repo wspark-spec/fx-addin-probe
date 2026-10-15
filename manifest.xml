@@ -4,7 +4,7 @@
            xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
            xsi:type="TaskPaneApp">
   <Id>1899199a-c087-4691-b645-57c381bac396</Id>
-  <Version>0.1.1.0</Version>
+  <Version>0.1.2.0</Version>
   <ProviderName>Sphere</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Flexport Sync (probe-pages)"/>
@@ -27,27 +27,27 @@
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
-              <Group id="FxSync.Group">
-                <Label resid="FxSync.Label"/>
+              <Group id="FxSyncP.Group">
+                <Label resid="FxSyncP.Label"/>
                 <Icon>
-                  <bt:Image size="16" resid="FxSync.Icon"/>
-                  <bt:Image size="32" resid="FxSync.Icon"/>
-                  <bt:Image size="80" resid="FxSync.Icon"/>
+                  <bt:Image size="16" resid="FxSyncP.Icon"/>
+                  <bt:Image size="32" resid="FxSyncP.Icon"/>
+                  <bt:Image size="80" resid="FxSyncP.Icon"/>
                 </Icon>
-                <Control xsi:type="Button" id="FxSync.Button">
-                  <Label resid="FxSync.Label"/>
+                <Control xsi:type="Button" id="FxSyncP.Button">
+                  <Label resid="FxSyncP.Label"/>
                   <Supertip>
-                    <Title resid="FxSync.Label"/>
-                    <Description resid="FxSync.Tip"/>
+                    <Title resid="FxSyncP.Label"/>
+                    <Description resid="FxSyncP.Tip"/>
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="FxSync.Icon"/>
-                    <bt:Image size="32" resid="FxSync.Icon"/>
-                    <bt:Image size="80" resid="FxSync.Icon"/>
+                    <bt:Image size="16" resid="FxSyncP.Icon"/>
+                    <bt:Image size="32" resid="FxSyncP.Icon"/>
+                    <bt:Image size="80" resid="FxSyncP.Icon"/>
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>FxSync.Pane</TaskpaneId>
-                    <SourceLocation resid="FxSync.Url"/>
+                    <TaskpaneId>FxSyncP.Pane</TaskpaneId>
+                    <SourceLocation resid="FxSyncP.Url"/>
                   </Action>
                 </Control>
               </Group>
@@ -58,16 +58,16 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="FxSync.Icon" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/icon.png"/>
+        <bt:Image id="FxSyncP.Icon" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/icon.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="FxSync.Url" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/taskpane.html"/>
+        <bt:Url id="FxSyncP.Url" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="FxSync.Label" DefaultValue="Flexport Sync"/>
+        <bt:String id="FxSyncP.Label" DefaultValue="FX Pages"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="FxSync.Tip" DefaultValue="Open the Flexport sync pane."/>
+        <bt:String id="FxSyncP.Tip" DefaultValue="Open the Flexport sync pane."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

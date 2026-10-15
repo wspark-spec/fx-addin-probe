@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xsi:type="TaskPaneApp">
+  <Id>1899199a-c087-4691-b645-57c381bac396</Id>
+  <Version>0.1.1.0</Version>
+  <ProviderName>Sphere</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Flexport Sync (probe-pages)"/>
+  <Description DefaultValue="Load probe: checks whether a custom add-in runs in Box-hosted Excel for the web."/>
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="ExcelApi" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://wspark-spec.github.io/fx-addin-probe/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="FxSync.Group">
+                <Label resid="FxSync.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="FxSync.Icon"/>
+                  <bt:Image size="32" resid="FxSync.Icon"/>
+                  <bt:Image size="80" resid="FxSync.Icon"/>
+                </Icon>
+                <Control xsi:type="Button" id="FxSync.Button">
+                  <Label resid="FxSync.Label"/>
+                  <Supertip>
+                    <Title resid="FxSync.Label"/>
+                    <Description resid="FxSync.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="FxSync.Icon"/>
+                    <bt:Image size="32" resid="FxSync.Icon"/>
+                    <bt:Image size="80" resid="FxSync.Icon"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>FxSync.Pane</TaskpaneId>
+                    <SourceLocation resid="FxSync.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="FxSync.Icon" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/icon.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="FxSync.Url" DefaultValue="https://wspark-spec.github.io/fx-addin-probe/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="FxSync.Label" DefaultValue="Flexport Sync"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="FxSync.Tip" DefaultValue="Open the Flexport sync pane."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
